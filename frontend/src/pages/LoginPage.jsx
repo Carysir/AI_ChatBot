@@ -14,16 +14,21 @@ export default function LoginPage({ onLogin }) {
     setLoading(true)
 
     try {
+      let token
       if (isRegister) {
-        await userApi.register(form)
-        // 注册成功后自动登录
+        const registerRes = await userApi.register({
+          username: form.username,
+          password: form.password,
+          email: form.email || undefined,
+        })
+        token = registerRes.data.access_token
+      } else {
+        const loginRes = await userApi.login({
+          username: form.username,
+          password: form.password,
+        })
+        token = loginRes.data.access_token
       }
-      const loginRes = await userApi.login({
-        username: form.username,
-        password: form.password,
-      })
-      const token = loginRes.data.access_token
-      // 获取用户信息
       localStorage.setItem('token', token)
       const userRes = await userApi.getMe()
       onLogin(userRes.data, token)

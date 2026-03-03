@@ -10,23 +10,27 @@ from backend.schemas import TokenResponse, UserCreate, UserLogin, UserResponse
 router = APIRouter(prefix="/api/user", tags=["用户管理"])
 
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=TokenResponse)
 def register(data: UserCreate, db: Session = Depends(get_db)):
-    """用户注册"""
+    """用户注册（注册成功后直接返回 Token）"""
     if db.query(User).filter(User.username == data.username).first():
         raise HTTPException(status_code=400, detail="用户名已存在")
-    if data.email and db.query(User).filter(User.email == data.email).first():
+
+    email = data.email if data.email else None
+    if email and db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="邮箱已被注册")
 
     user = User(
         username=data.username,
         password_hash=hash_password(data.password),
-        email=data.email,
+        email=email,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
-    return user
+
+    token = create_access_token(user.id)
+    return TokenResponse(access_token=token)
 
 
 @router.post("/login", response_model=TokenResponse)
