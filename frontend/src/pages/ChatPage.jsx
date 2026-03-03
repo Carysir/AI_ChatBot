@@ -4,7 +4,7 @@ import { Send, BookOpen, Loader2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { chatApi, kbApi } from '../api'
 
-export default function ChatPage() {
+export default function ChatPage({ onConversationCreated }) {
   const { convId } = useParams()
   const navigate = useNavigate()
   const [messages, setMessages] = useState([])
@@ -51,9 +51,10 @@ export default function ChatPage() {
       const newConvId = res.data.conversation_id
       const assistantMsg = res.data.message
 
-      // 如果是新对话，跳转
+      // 如果是新对话，跳转并刷新侧边栏
       if (!convId) {
         navigate(`/chat/${newConvId}`, { replace: true })
+        onConversationCreated?.()
       }
 
       setMessages((prev) => [...prev, assistantMsg])

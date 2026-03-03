@@ -3,14 +3,14 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { MessageSquare, BookOpen, Plus, Trash2, LogOut, User } from 'lucide-react'
 import { chatApi } from '../api'
 
-export default function Sidebar({ user, onLogout }) {
+export default function Sidebar({ user, onLogout, refreshKey }) {
   const [conversations, setConversations] = useState([])
   const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
     loadConversations()
-  }, [])
+  }, [refreshKey])
 
   const loadConversations = async () => {
     try {

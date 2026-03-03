@@ -8,7 +8,10 @@ import Sidebar from './components/Sidebar'
 export default function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [convRefresh, setConvRefresh] = useState(0)
   const navigate = useNavigate()
+
+  const refreshConversations = () => setConvRefresh((c) => c + 1)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -55,11 +58,11 @@ export default function App() {
 
   return (
     <div className="h-screen flex">
-      <Sidebar user={user} onLogout={handleLogout} />
+      <Sidebar user={user} onLogout={handleLogout} refreshKey={convRefresh} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Routes>
-          <Route path="/" element={<ChatPage />} />
-          <Route path="/chat/:convId" element={<ChatPage />} />
+          <Route path="/" element={<ChatPage onConversationCreated={refreshConversations} />} />
+          <Route path="/chat/:convId" element={<ChatPage onConversationCreated={refreshConversations} />} />
           <Route path="/knowledge" element={<KnowledgePage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
