@@ -32,7 +32,7 @@ do_start() {
     else
         nohup uv run uvicorn backend.main:app --host 0.0.0.0 --port "$BACKEND_PORT" > "$BACKEND_LOG" 2>&1 &
         echo -n "    等待后端启动"
-        for i in $(seq 1 15); do
+        for i in $(seq 1 60); do
             sleep 1
             echo -n "."
             if [ -n "$(get_backend_pids)" ]; then break; fi
